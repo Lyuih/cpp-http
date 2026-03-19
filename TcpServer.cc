@@ -58,9 +58,10 @@ void TcpServer::loop()
             continue;
         }
         int connect_fd = ret;
-        LOG_INFO("客户端连接建立成功");
+        LOG_INFO("客户端连接建立成功，准备分发给线程池");
         std::string msg;
-        recvMsg(connect_fd,msg);
+        // recvMsg(connect_fd,msg);
+        thread_pool_->append(std::bind(&TcpServer::handleClient,this,connect_fd));
     }
 }
 

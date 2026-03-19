@@ -3,7 +3,7 @@
  * tcp服务器，封装套接字
  * yui
  * 2026-03-16
- * 2026-03-17基础功能完成
+ * 2026-03-18加入线程池
  */
 
 #ifndef TCPSERVER_H
@@ -20,6 +20,8 @@
 #include <cstring>
 
 #include "Logger.h"
+#include "ThreadPool.h"
+#include "Buffer.h"
 
 
 #define BUFF_SIZE 1024
@@ -63,9 +65,12 @@ public:
     bool recvMsg(const int connect_fd,std::string& msg);
     bool sendMsg(const int connect_fd,const std::string& msg);
 
-    void init(const int port)
+    void init(const int port,const int thread_num)
     {
         port_ = port;
+        thread_pool_ = std::make_unique<ThreadPool>(thread_num);
+        //启动线程池
+        thread_pool_->start();
     }
 
 private:
@@ -75,10 +80,19 @@ private:
     {
     }
     ~TcpServer() {}
+    void handleClient(int connect_fd)
+    {
+        std::string msg;
+        if(recvMsg(connect_fd,msg))
+        {
+            LOG_DEBUG("客户端请求处理完成并关闭连接fd:%d",connect_fd);
+        }
+    }
 
 private:
     int port_;
     int listen_sock_;
+    std::unique_ptr<ThreadPool> thread_pool_;
 };
 
 #endif
