@@ -6,6 +6,7 @@ bool Buffer::ensureWriteableBytes(size_t len)
     {
         makeSpace(len);
     }
+    return true;
 }
 // |********R<----------Rable----------->W<------Wable-------->|
 void Buffer::makeSpace(size_t len)

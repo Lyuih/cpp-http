@@ -18,7 +18,6 @@
 #include <condition_variable>
 #include "Logger.h"
 
-#define NUM 10
 
 /**
  * 线程池
@@ -27,7 +26,7 @@ class ThreadPool
 {
 public:
     using func_task = std::function<void()>;
-    ThreadPool(const int num = NUM);
+    ThreadPool(const int num);
     // 禁止拷贝
     ThreadPool(const ThreadPool &thread_pool) = delete;
     ThreadPool &operator=(const ThreadPool &thread_pool) = delete;

@@ -67,10 +67,12 @@ void TcpServer::loop()
 
 bool TcpServer::recvMsg(const int connect_fd,std::string& msg)
 {
-    char buf[BUFF_SIZE];
-    for (;;)
-    {
-        ssize_t n = ::recv(connect_fd, buf, BUFF_SIZE, 0);
+    // char buf[BUFF_SIZE];
+    Buffer read_buf;
+
+        // ssize_t n = ::recv(connect_fd, buf, BUFF_SIZE, 0);
+        int err;
+        int n = read_buf.readFd(connect_fd,&err);
         if (n == -1)
         {
             LOG_ERROR("读取客户端信息失败");
@@ -80,24 +82,12 @@ bool TcpServer::recvMsg(const int connect_fd,std::string& msg)
         {
             LOG_INFO("客户端连接关闭");
             // std::cout<<msg<<std::endl;
-            break;
         }
         else
         {
-            buf[n] = '\0';
-            std::cout << "收到请求片段：" << buf << std::endl;
-            msg.append(buf);
-            if (msg.find("\r\n\r\n") != std::string::npos)
-            {
-                std::string send_msg = "HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\nHello";
-                // ::send(connect_fd, response, sizeof(response), 0);4
-                sendMsg(connect_fd,send_msg);
-                ::close(connect_fd);
-                break;
-            }
-            // msg.append(buf);
+            ;
         }
-    }
+
     return true;
 }
 

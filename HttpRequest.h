@@ -35,7 +35,7 @@ public:
     }
     bool parse(Buffer &buffer);
     bool isFinish() const { return state_ == ParseState::FINISH; }
-
+    std::string path(){return path_;}
 private:
     bool parseRequestLine(const std::string &line);
     void parseHeader(const std::string &line);

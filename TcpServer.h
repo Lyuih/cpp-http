@@ -18,6 +18,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <functional>
 
 #include "Logger.h"
 #include "ThreadPool.h"
@@ -43,6 +44,7 @@ public:
         LINSTIN_ERR,
         ACCEPT_ERR
     };
+    using func_handle = std::function<void(int)>;
 
     TcpServer(const TcpServer &tcp_server) = delete;
     TcpServer(const TcpServer &&tcp_server) = delete;
@@ -65,10 +67,11 @@ public:
     bool recvMsg(const int connect_fd,std::string& msg);
     bool sendMsg(const int connect_fd,const std::string& msg);
 
-    void init(const int port,const int thread_num)
+    void init(const int port,const int thread_num,const func_handle& func)
     {
         port_ = port;
         thread_pool_ = std::make_unique<ThreadPool>(thread_num);
+        func_ = func;
         //启动线程池
         thread_pool_->start();
     }
@@ -82,17 +85,14 @@ private:
     ~TcpServer() {}
     void handleClient(int connect_fd)
     {
-        std::string msg;
-        if(recvMsg(connect_fd,msg))
-        {
-            LOG_DEBUG("客户端请求处理完成并关闭连接fd:%d",connect_fd);
-        }
+        func_(connect_fd);
     }
 
 private:
     int port_;
     int listen_sock_;
     std::unique_ptr<ThreadPool> thread_pool_;
+    func_handle func_;
 };
 
 #endif
