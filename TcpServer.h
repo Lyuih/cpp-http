@@ -23,6 +23,7 @@
 #include "Logger.h"
 #include "ThreadPool.h"
 #include "Buffer.h"
+#include "Epoller.h"
 
 
 #define BUFF_SIZE 1024
@@ -87,12 +88,14 @@ private:
     {
         func_(connect_fd);
     }
+    void handleAccept();
 
 private:
     int port_;
     int listen_sock_;
     std::unique_ptr<ThreadPool> thread_pool_;
     func_handle func_;
+    Epoller epoller_;
 };
 
 #endif
