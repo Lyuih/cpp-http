@@ -86,11 +86,11 @@ HttpResponse HttpServer::handleStaticFile(const std::string &path)
     }
 
     // 3.识别后缀并设置content-type
-    auto pos = path.find_last_of('.');
+    auto pos = full_path.find_last_of('.');
     std::string suffix;
     if (pos != std::string::npos)
     {
-        suffix = path.substr(pos);
+        suffix = full_path.substr(pos);
     }
     if (SUFFIX_TYPE.count(suffix))
     {
