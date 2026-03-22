@@ -35,7 +35,12 @@ public:
     }
     bool parse(Buffer &buffer);
     bool isFinish() const { return state_ == ParseState::FINISH; }
-    std::string path(){return path_;}
+    std::string path() { return path_; }
+    std::string method() { return method_; }
+    size_t content_length() { return content_length_; }
+    std::string query_string() { return query_string_; }
+    std::string body() { return body_; }
+
 private:
     bool parseRequestLine(const std::string &line);
     void parseHeader(const std::string &line);
@@ -54,6 +59,8 @@ private:
     std::string version_;
     // 请求参数
     std::unordered_map<std::string, std::string> query_params_;
+    // 请求参数字符串
+    std::string query_string_;
     // 请求头
     std::unordered_map<std::string, std::string> request_head_;
     // 正文

@@ -90,6 +90,7 @@ bool HttpRequest::parseRequestLine(const std::string &line)
     if (pos != std::string::npos)
     {
         std::string query_str = path_.substr(pos + 1);
+        query_string_ = query_str;
         path_ = path_.substr(0, pos);
         // 3.解析query_str
         parseQueryParams(query_str);
