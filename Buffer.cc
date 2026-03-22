@@ -15,6 +15,11 @@ void Buffer::makeSpace(size_t len)
     if (writeableBytes() + read_index_ < len)
     {
         // 不够,扩容
+        size_t readable_bytes = readableBytes();
+        std::memmove(&buffer_[0], &buffer_[read_index_], readable_bytes);
+        read_index_ = 0;
+        write_index_ = readable_bytes;
+
         buffer_.resize(write_index_ + len);
     }
     else
@@ -77,7 +82,7 @@ ssize_t Buffer::readFd(int fd, int *saveErrno)
     }
     else
     {
-        //数据写入了第二部分
+        // 数据写入了第二部分
         write_index_ = buffer_.size();
         append(tmp_buf, n - writeable);
     }
