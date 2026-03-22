@@ -53,7 +53,7 @@ void ThreadPool::handle(std::string name)
         std::unique_lock<std::mutex> lock(mutex_);
         cond_.wait(lock, [this]()
                    { return !is_running_ || !isEmpty(); });
-        if (is_running_ == false)
+        if (is_running_ == false && tasks_.empty())
         {
             break;
         }
