@@ -25,7 +25,6 @@
 #include "Buffer.h"
 #include "Epoller.h"
 
-
 #define BUFF_SIZE 1024
 
 /**
@@ -58,23 +57,27 @@ public:
         return instance;
     }
 
-    //创建套接字
+    // 创建套接字
     TCP_STATUS createSocket();
 
-    //阻塞等待客户端连接
+    // 阻塞等待客户端连接
     void loop();
 
-    //接收消息
-    bool recvMsg(const int connect_fd,std::string& msg);
-    bool sendMsg(const int connect_fd,const std::string& msg);
+    // 接收消息
+    bool recvMsg(const int connect_fd, std::string &msg);
+    bool sendMsg(const int connect_fd, const std::string &msg);
 
-    void init(const int port,const int thread_num,const func_handle& func)
+    void init(const int port, const int thread_num, const func_handle &func)
     {
         port_ = port;
         thread_pool_ = std::make_unique<ThreadPool>(thread_num);
         func_ = func;
-        //启动线程池
+        // 启动线程池
         thread_pool_->start();
+    }
+    void updateFd(int fd, uint32_t events)
+    {
+        epoller_.modFd(fd, events);
     }
 
 private:

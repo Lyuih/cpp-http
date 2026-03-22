@@ -10,7 +10,7 @@ TcpServer::TCP_STATUS TcpServer::createSocket()
         LOG_FATAL("套接字创建失败");
         return TCP_STATUS::SOCK_ERR;
     }
-    LOG_DEBUG("创建套接字成功");
+    LOG_DEBUG("创建套接字成功, listen_sock_=%d", ret);
     listen_sock_ = ret;
 
     // 设置端口复用
@@ -58,7 +58,7 @@ void TcpServer::loop()
             }
             else
             {
-                epoller_.delFd(fd);
+                // epoller_.delFd(fd);
                 thread_pool_->append(std::bind(&TcpServer::handleClient, this, fd));
             }
         }
@@ -115,14 +115,15 @@ void TcpServer::handleAccept()
     int ret = ::accept(listen_sock_, (struct sockaddr *)&addr, &len);
     if (ret == -1)
     {
-        LOG_ERROR("客户端连接错误：%s",strerror(errno));
+        LOG_ERROR("客户端连接错误：%s. listen_sock_=%d",strerror(errno), listen_sock_);
         // std::this_thread(sle)
+        ::sleep(1); // 避免刷屏
         return;
     }
     int connect_fd = ret;
     //将新fd注册到epoll监听名单中
     // 监听可读事件(EPOLLIN)和对端断开事件(EPOLLRDHUP)
     //使用LT模式
-    epoller_.addFd(connect_fd,EPOLLIN | EPOLLRDHUP);
+    epoller_.addFd(connect_fd,EPOLLIN | EPOLLRDHUP|EPOLLONESHOT);
     LOG_INFO("新连接建立 fd : %d",connect_fd);
 }
