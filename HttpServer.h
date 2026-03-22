@@ -15,9 +15,12 @@
 
 #include <fstream>
 #include <sstream>
+#include <cstdlib>
 #include "TcpServer.h"
 #include "HttpRequest.h"
 #include "HttpResponse.h"
+#include <fcntl.h>
+#include <sys/wait.h>
 
 /**
  * http服务器
@@ -25,7 +28,7 @@
  * 负责存储http请求和响应
  */
 // 默认端口号
-#define DEFAULT_PORT 8888
+#define DEFAULT_PORT 8889
 #define THREAD_NUM 10
 
 static const std::unordered_map<std::string, std::string> SUFFIX_TYPE = {
@@ -65,6 +68,8 @@ private:
     HttpResponse handleStaticFile(const std::string& path);
     // 根据请求路径分发逻辑
     void handleRequest(int fd, HttpRequest &req);
+    //CGI机制
+    void handleCgiRequest(int fd,HttpRequest&req);
 
 private:
     int port_;
